@@ -1,0 +1,60 @@
+{
+    "name": "markdown-haed-number",
+    "displayName": "markdown haed number",
+    "description": "Add or remove haed number for markdown file",
+    "version": "0.0.1",
+    "publisher": "arrayfly",
+    "repository": {
+		"type": "git",
+		"url": "https://github.com/lengyingzi/markdown-haed-number.git"
+	},
+    "icon": "icon.png",
+    "engines": {
+        "vscode": "^1.20.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "onCommand:extension.addMarkdownHeadNumber",
+        "onCommand:extension.delMarkdownHeadNumber"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+				"command": "extension.addMarkdownHeadNumber",
+				"title": "markdown add  head number"
+			},
+			{
+				"command": "extension.delMarkdownHeadNumber",
+				"title": "markdown del head number"
+			}
+        ],
+        "menus":{
+			"editor/context":[
+				{
+					"command": "extension.addMarkdownHeadNumber",
+					"when": "editorLangId == markdown"
+				},
+				{
+					"command": "extension.delMarkdownHeadNumber",
+					"when": "editorLangId == markdown"
+				}
+			]
+		}
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42"
+    }
+}
