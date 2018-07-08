@@ -83,6 +83,37 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
       context.subscriptions.push(disposable2);
+      let disposable3 = vscode.commands.registerCommand(
+        "extension.addMarkdownHeadChapter",
+        () => {
+          // The code you place here will be executed every time your command is executed
+          var editor = vscode.window.activeTextEditor;
+          if (!editor) {
+            vscode.window.showInformationMessage("No open text editor");
+            return; // No open text editor
+          }
+          var selection = editor.selection;
+          var text = editor.document.getText(selection);
+          var lines;
+          if (text.length == 0) {
+            // use all text if no selection
+            lines = editor.document.getText().split("\n");
+            selection = new vscode.Selection(0, 0, lines.length, 0);
+          } else {
+            lines = text.split("\n");
+          }
+          addMarkdownTitleIndex(lines);
+          replaceHeadTop(lines);
+          editor.edit(function(builder) {
+            var resultText = lines.join("\n");
+            builder.replace(
+              new vscode.Range(selection.start, selection.end),
+              resultText
+            );
+          });
+        }
+      );
+      context.subscriptions.push(disposable3);
 }
 
 // this method is called when your extension is deactivated
@@ -167,7 +198,7 @@ function addPrefix(line, prefix, markCount) {
     return cursor;
   }
 
-  function addMarkdownTitleIndex(content) {
+function addMarkdownTitleIndex(content) {
     var startNum = 0;
     var cursor = 0;
     while (cursor < content.length) {
@@ -195,9 +226,62 @@ function addPrefix(line, prefix, markCount) {
     while (cursor < content.length) {
       var line = content[cursor].trim();
       if (line.startsWith("#")) {
-        content[cursor] = line.replace(/#\s+((\d\.?)+)\s*/g, "# ").trim();
+        content[cursor] = line.replace(/#\s+((\d\.?)+)\s*/g, "# ");
       }
       cursor++;
     }
     return content;
   }
+function replaceHeadTop(content) {
+    var startNum = 0;
+    var cursor = 0;
+
+    while (cursor < content.length) {
+      var line = content[cursor].trim();
+      if (line.startsWith("# ")) {
+        var regx = /\s+(\d+)\s*/g;
+        var r = line.match(regx);
+        if (r != null) {
+          startNum =parseInt(r[0].trim());
+          var chapter = SectionToChinese(startNum);
+          content[cursor] = line.replace(/#\s+((\d\.?)+)\s*/g, "# 第"+chapter+"章 ")
+        }
+      }
+      cursor++;
+    }
+    if (startNum < 0) {
+      startNum = 0;
+    }
+    addTitleIndex(content, 0, startNum, 0);
+    // addTitleIndex(content, 0, "", 0);
+    return content;
+  }
+
+  var chnNumChar = ["零","一","二","三","四","五","六","七","八","九"];
+  var chnUnitSection = ["","万","亿","万亿","亿亿"];
+  var chnUnitChar = ["","十","百","千"];
+
+  function SectionToChinese(section){
+      var strIns = '', chnStr = '';
+      var unitPos = 0;
+      var zero = true;
+      while(section > 0){
+          var v = section % 10;
+          if(v === 0){
+              if(!zero){
+                  zero = true;
+                  chnStr = chnNumChar[v] + chnStr;
+              }
+          }else{
+              zero = false;
+              strIns = chnNumChar[v];
+              strIns += chnUnitChar[unitPos];
+              chnStr = strIns + chnStr;
+          }
+          unitPos++;
+          section = Math.floor(section / 10);
+      }
+      return chnStr;
+  }
+
+
