@@ -22,10 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     // });
 
     // context.subscriptions.push(disposable);
-    let disposable = vscode.commands.registerCommand(
-        "extension.addMarkdownHeadNumber",
-        () => {
-          // The code you place here will be executed every time your command is executed
+    let disposable = vscode.commands.registerCommand("extension.addMarkdownHeadNumber",() => {
           var editor = vscode.window.activeTextEditor;
           if (!editor) {
             vscode.window.showInformationMessage("No open text editor");
@@ -53,10 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
       );
       context.subscriptions.push(disposable);
 
-      let disposable2 = vscode.commands.registerCommand(
-        "extension.delMarkdownHeadNumber",
-        () => {
-          // The code you place here will be executed every time your command is executed
+      let disposable2 = vscode.commands.registerCommand("extension.delMarkdownHeadNumber",() => {
           var editor = vscode.window.activeTextEditor;
           if (!editor) {
             vscode.window.showInformationMessage("No open text editor");
@@ -83,10 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
       context.subscriptions.push(disposable2);
-      let disposable3 = vscode.commands.registerCommand(
-        "extension.addMarkdownHeadChapter",
-        () => {
-          // The code you place here will be executed every time your command is executed
+      let disposable3 = vscode.commands.registerCommand("extension.addMarkdownHeadChapter",() => {
           var editor = vscode.window.activeTextEditor;
           if (!editor) {
             vscode.window.showInformationMessage("No open text editor");
@@ -96,7 +87,6 @@ export function activate(context: vscode.ExtensionContext) {
           var text = editor.document.getText(selection);
           var lines;
           if (text.length == 0) {
-            // use all text if no selection
             lines = editor.document.getText().split("\n");
             selection = new vscode.Selection(0, 0, lines.length, 0);
           } else {
@@ -208,7 +198,6 @@ function addMarkdownTitleIndex(content) {
         var r = line.match(regx);
         if (r != null) {
           startNum = parseInt(r[0].trim()) - 1;
-          //vscode.window.showInformationMessage(startNum+"");
         }
         break;
       }
@@ -218,7 +207,6 @@ function addMarkdownTitleIndex(content) {
       startNum = 0;
     }
     addTitleIndex(content, 0, startNum, 0);
-    // addTitleIndex(content, 0, "", 0);
     return content;
   }
   function delMarkdownTitleIndex(content) {
@@ -226,7 +214,7 @@ function addMarkdownTitleIndex(content) {
     while (cursor < content.length) {
       var line = content[cursor].trim();
       if (line.startsWith("#")) {
-        content[cursor] = line.replace(/#\s+((\d\.?)+)\s*/g, "# ");
+        content[cursor] = line.replace(/#\s+([\d\.]+)\s*/g, "# ").replace(/#\s+(第.+章)\s*/g, "# ");
       }
       cursor++;
     }
@@ -235,25 +223,23 @@ function addMarkdownTitleIndex(content) {
 function replaceHeadTop(content) {
     var startNum = 0;
     var cursor = 0;
-
-    while (cursor < content.length) {
-      var line = content[cursor].trim();
-      if (line.startsWith("# ")) {
-        var regx = /\s+(\d+)\s*/g;
-        var r = line.match(regx);
-        if (r != null) {
-          startNum =parseInt(r[0].trim());
-          var chapter = SectionToChinese(startNum);
-          content[cursor] = line.replace(/#\s+((\d\.?)+)\s*/g, "# 第"+chapter+"章 ")
+    var regxTopHead = /^#\s+/ig;
+    while (cursor < content.length)
+    {
+      let linetxt = content[cursor];
+      if (regxTopHead.test(linetxt))
+      {
+        var regx = /#\s+(\d+)\s+/ig;
+        let r = regx.exec(linetxt);
+        if (r != null)
+        {
+          var chapter = SectionToChinese(parseInt(r[1].trim()));
+          content[cursor] = linetxt.replace(/#\s+(\d+)\s+/g, "# 第"+chapter+"章 ")
         }
       }
       cursor++;
     }
-    if (startNum < 0) {
-      startNum = 0;
-    }
-    addTitleIndex(content, 0, startNum, 0);
-    // addTitleIndex(content, 0, "", 0);
+
     return content;
   }
 
