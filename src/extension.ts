@@ -104,6 +104,29 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
       context.subscriptions.push(disposable3);
+      let disposable4 = vscode.commands.registerCommand("extension.delMarkdownLineBreaks",() => {
+        var editor = vscode.window.activeTextEditor;
+        if (!editor) {
+          vscode.window.showInformationMessage("No open text editor");
+          return; // No open text editor
+        }
+        var selection = editor.selection;
+        var text = editor.document.getText(selection);
+        //var lines;
+        if (text.length == 0) {
+          // use all text if no selection
+          text=editor.document.getText();
+        }
+
+        editor.edit(function(builder) {
+          builder.replace(
+            new vscode.Range(selection.start, selection.end),
+            text.replace(/\n(?!\w)/g,"")
+          );
+        });
+      }
+    );
+    context.subscriptions.push(disposable4);
 }
 
 // this method is called when your extension is deactivated

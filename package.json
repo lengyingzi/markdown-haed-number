@@ -18,7 +18,8 @@
     "activationEvents": [
         "onCommand:extension.addMarkdownHeadNumber",
         "onCommand:extension.delMarkdownHeadNumber",
-        "onCommand:extension.addMarkdownHeadChapter"
+        "onCommand:extension.addMarkdownHeadChapter",
+        "onCommand:extension.delMarkdownLineBreaks"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -34,6 +35,10 @@
             {
                 "command": "extension.delMarkdownHeadNumber",
                 "title": "markdown head del number"
+            },
+            {
+                "command": "extension.delMarkdownLineBreaks",
+                "title": "markdown line del breaks"
             }
         ],
         "menus": {
