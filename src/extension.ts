@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Use the console to output diagnostic information (console.log) and errors (console.error)
     // This line of code will only be executed once when your extension is activated
-    //console.log('Congratulations, your extension "markdown-title-index" is now active!');
+    console.log('Congratulations, your extension "markdown-haed-number" is now active!');
 
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with  registerCommand
@@ -92,6 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
           } else {
             lines = text.split("\n");
           }
+          delMarkdownChapter(lines);
           addMarkdownTitleIndex(lines);
           replaceHeadTop(lines);
           editor.edit(function(builder) {
@@ -104,6 +105,77 @@ export function activate(context: vscode.ExtensionContext) {
         }
       );
       context.subscriptions.push(disposable3);
+
+      let disposable4 = vscode.commands.registerCommand("extension.addMarkdownHeadPreText",() => {
+        vscode.window.showInformationMessage("addMarkdownHeadPreText");
+        var editor = vscode.window.activeTextEditor;
+        if (!editor) {
+          vscode.window.showInformationMessage("No open text editor");
+          return; // No open text editor
+        }
+        var selection = editor.selection;
+        var text = editor.document.getText(selection);
+        var lines;
+        if (text.length == 0) {
+          // use all text if no selection
+          lines = editor.document.getText().split("\n");
+          selection = new vscode.Selection(0, 0, lines.length, 0);
+        } else {
+          lines = text.split("\n");
+        }
+        const config = vscode.workspace.getConfiguration('arrayfly');
+        const onepretext = config.get('onepretext');
+        const twopretext = config.get('twopretext');
+        if(!onepretext && !twopretext)
+        {
+          return;
+        }
+        lines=addMarkdownTitlePreText(lines,onepretext,twopretext);
+        editor.edit(function(builder) {
+          var resultText = lines.join("\n");
+          builder.replace(
+            new vscode.Range(selection.start, selection.end),
+            resultText
+          );
+        });
+      }
+    );
+    context.subscriptions.push(disposable4);
+
+    let disposable5 = vscode.commands.registerCommand("extension.delMarkdownHeadPreText",() => {
+      var editor = vscode.window.activeTextEditor;
+      if (!editor) {
+        vscode.window.showInformationMessage("No open text editor");
+        return; // No open text editor
+      }
+      var selection = editor.selection;
+      var text = editor.document.getText(selection);
+      var lines;
+      if (text.length == 0) {
+        // use all text if no selection
+        lines = editor.document.getText().split("\n");
+        selection = new vscode.Selection(0, 0, lines.length, 0);
+      } else {
+        lines = text.split("\n");
+      }
+      const config = vscode.workspace.getConfiguration('arrayfly');
+        const onepretext = config.get('onepretext');
+        const twopretext = config.get('twopretext');
+        if(!onepretext && !twopretext)
+        {
+          return;
+        }
+      lines=delMarkdownTitlePreText(lines,onepretext,twopretext);
+      editor.edit(function(builder) {
+        var resultText = lines.join("\n");
+        builder.replace(
+          new vscode.Range(selection.start, selection.end),
+          resultText
+        );
+      });
+    }
+  );
+  context.subscriptions.push(disposable5);
 }
 
 // this method is called when your extension is deactivated
@@ -209,17 +281,85 @@ function addMarkdownTitleIndex(content) {
     addTitleIndex(content, 0, startNum, 0);
     return content;
   }
-  function delMarkdownTitleIndex(content) {
+
+function delMarkdownTitleIndex(content) {
     var cursor = 0;
     while (cursor < content.length) {
-      var line = content[cursor].trim();
+      var line = content[cursor];
       if (line.startsWith("#")) {
         content[cursor] = line.replace(/#\s+([\d\.]+)\s*/g, "# ").replace(/#\s+(第.+章)\s*/g, "# ");
       }
       cursor++;
     }
     return content;
+}
+
+function delMarkdownChapter(content) {
+  var cursor = 0;
+  var regxTopHead = /^#\s+/ig;
+  while (cursor < content.length) {
+    var line = content[cursor].trim();
+    if (regxTopHead.test(line)){
+    // if (line.startsWith("#")) {
+      content[cursor] = line.replace(/#\s+(第.+章)\s*/g, "# ");
+    }
+    cursor++;
   }
+  return content;
+}
+function addMarkdownTitlePreText(content,onepretext,twopretext) {
+  var startNum = 0;
+  var cursor = 0;
+  var result= new Array();
+  while (cursor < content.length) {
+    var line = content[cursor].trim();
+    if (line.startsWith("# ")) {
+      if(onepretext && onepretext!="")
+      {
+        result.push("");
+        result.push(onepretext);
+      }
+    }
+    else if (line.startsWith("## ")) {
+      if(twopretext && twopretext!="")
+      {
+        result.push("");
+        result.push(twopretext);
+      }
+    }
+    result.push(line);
+    cursor++;
+  }
+
+  return result;
+}
+function delMarkdownTitlePreText(content,onepretext,twopretext) {
+  var startNum = 0;
+  var cursor = 0;
+  var result= new Array();
+  while (cursor < content.length) {
+    var line = content[cursor].trim();
+    if (onepretext!="" && line==onepretext) {
+        if(cursor>0 && result[cursor-1]=="")
+        {
+          result.pop();
+        }
+    }
+    else if (twopretext!="" && line==twopretext) {
+      if(cursor>0 && result[cursor-1]=="")
+      {
+        result.pop();
+      }
+    }
+    else
+    {
+      result.push(line);
+    }
+    cursor++;
+  }
+
+  return result;
+}
 function replaceHeadTop(content) {
     var startNum = 0;
     var cursor = 0;

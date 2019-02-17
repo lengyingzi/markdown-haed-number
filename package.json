@@ -2,7 +2,7 @@
     "name": "markdown-haed-number",
     "displayName": "markdown haed number",
     "description": "Add or remove haed number for markdown file",
-    "version": "0.0.1",
+    "version": "0.0.3",
     "publisher": "arrayfly",
     "repository": {
         "type": "git",
@@ -18,7 +18,9 @@
     "activationEvents": [
         "onCommand:extension.addMarkdownHeadNumber",
         "onCommand:extension.delMarkdownHeadNumber",
-        "onCommand:extension.addMarkdownHeadChapter"
+        "onCommand:extension.addMarkdownHeadChapter",
+        "onCommand:extension.addMarkdownHeadPreText",
+        "onCommand:extension.delMarkdownHeadPreText"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -34,6 +36,14 @@
             {
                 "command": "extension.delMarkdownHeadNumber",
                 "title": "markdown head del number"
+            },
+            {
+                "command": "extension.addMarkdownHeadPreText",
+                "title": "markdown head add pretext"
+            },
+            {
+                "command": "extension.delMarkdownHeadPreText",
+                "title": "markdown head del pretext"
             }
         ],
         "menus": {
@@ -49,9 +59,38 @@
                 {
                     "command": "extension.delMarkdownHeadNumber",
                     "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "extension.addMarkdownHeadPreText",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "extension.delMarkdownHeadPreText",
+                    "when": "editorLangId == markdown"
                 }
             ]
-        }
+        },
+        "configuration": {
+			"type": "object",
+			"title": "arrayfly configuration",
+			"properties": {
+				"arrayfly.enable": {
+					"type": "boolean",
+					"default": false,
+					"description": "是否启用"
+				},
+				"arrayfly.onepretext": {
+					"type": "string",
+					"default": "",
+					"description": "一级标题前缀"
+				},
+				"arrayfly.twopretext": {
+					"type": "string",
+					"default": "",
+					"description": "二级标题前缀"
+				}
+			}
+		}
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
