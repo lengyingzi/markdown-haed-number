@@ -191,14 +191,18 @@ export function activate(context: vscode.ExtensionContext) {
       text=editor.document.getText();
       selection = new vscode.Selection(0, 0, text.split("\n").length, 0);
     }
+    //remove ansower
+    text=text.replace(/\?[A-D]\n/g,"?\n");
+
+    text=text.replace(/\n+(?=\d)/g,"\n\n");
+    text=text.replace(/(?<=D.*)\n(?!\n)/g,"\n\n1.");
     // remove line breaks in center of description
     text=text.replace(/\n(?!\w)/g,"");
-    // add line breaks before title number
-    text=text.replace(/\n+(?=\d)/g,"\n\n");
-    //remove ansower
-    text=text.replace(/\?[A-Z]\n/g,"?\n");
+// add line breaks before title number
+text=text.replace(/\n+(?=\d)/g,"\n\n");
     //add dot . befor option  eg. A.
-    text=text.replace(/^[A-Z](?!\.)/g,"$0.");
+    text=text.replace(/^[A-D](?!\.)/g,"$0.");
+    vscode.window.showInformationMessage(' replace(^[A-Z](?!\\.) , $0.)');
     editor.edit(function(builder) {
 
       builder.replace(

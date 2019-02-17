@@ -2,7 +2,7 @@
     "name": "markdown-haed-number",
     "displayName": "markdown haed number",
     "description": "Add or remove haed number for markdown file",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "publisher": "arrayfly",
     "repository": {
         "type": "git",
