@@ -9,3 +9,5 @@ F1唤醒命令行或者点击右键菜单，运行 `> markdown head add chapter`
 
 ## 0.0.1
 Initial release
+
+F1唤醒命令行或者点击右键菜单，运行 `> markdown line del breaks`，题库处理,删除多余的换行符.
