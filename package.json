@@ -2,7 +2,7 @@
     "name": "markdown-haed-number",
     "displayName": "markdown haed number",
     "description": "Add or remove haed number for markdown file",
-    "version": "0.0.6",
+    "version": "0.0.8",
     "publisher": "arrayfly",
     "repository": {
         "type": "git",
@@ -21,7 +21,8 @@
         "onCommand:extension.addMarkdownHeadChapter",
         "onCommand:extension.addMarkdownHeadPreText",
         "onCommand:extension.delMarkdownHeadPreText",
-        "onCommand:extension.delMarkdownLineBreaks"
+        "onCommand:extension.delMarkdownLineBreaks",
+        "onCommand:extension.formatMarkdownLineAnowser"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -49,6 +50,10 @@
             {
                 "command": "extension.delMarkdownLineBreaks",
                 "title": "markdown line del breaks"
+            },
+            {
+                "command": "extension.formatMarkdownLineAnowser",
+                "title": "markdown line format ansower"
             }
         ],
         "menus": {
@@ -75,6 +80,10 @@
                 },
                 {
                     "command": "extension.delMarkdownLineBreaks",
+                    "when": "editorLangId == markdown"
+                },
+                {
+                    "command": "extension.formatMarkdownLineAnowser",
                     "when": "editorLangId == markdown"
                 }
             ]

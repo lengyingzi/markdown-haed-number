@@ -199,10 +199,13 @@ export function activate(context: vscode.ExtensionContext) {
     // remove line breaks in center of description
     text=text.replace(/\n(?!\w)/g,"");
 // add line breaks before title number
-text=text.replace(/\n+(?=\d)/g,"\n\n");
+   text=text.replace(/\n+(?=\d)/g,"\n\n");
+
+   text=text.replace(/\s+(?=[A-D])/g,"\n");
     //add dot . befor option  eg. A.
-    text=text.replace(/^[A-D](?!\.)/g,"$0.");
-    vscode.window.showInformationMessage(' replace(^[A-Z](?!\\.) , $0.)');
+    text=text.replace(/^A(?!\.)/g,'A.')
+    //.replace(/^B[^\.]/g,'B.').replace(/^C.[^\.]/g,'C.').replace(/^D[^\.]/g,'D.');
+    vscode.window.showInformationMessage(' replace(         ^[A-D](?!\\.)     , $0.      )');
     editor.edit(function(builder) {
 
       builder.replace(
@@ -213,6 +216,38 @@ text=text.replace(/\n+(?=\d)/g,"\n\n");
   }
 );
 context.subscriptions.push(disposable6);
+
+let disposable7 = vscode.commands.registerCommand("extension.formatMarkdownLineAnowser",() => {
+  var editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showInformationMessage("No open text editor");
+    return; // No open text editor
+  }
+  var selection = editor.selection;
+  var text = editor.document.getText(selection);
+  //var lines;
+  if (text.length == 0) {
+    // use all text if no selection
+    text=editor.document.getText();
+    selection = new vscode.Selection(0, 0, text.split("\n").length, 0);
+  }
+  //remove ansower
+  text=text.replace(/[0-9\s\n\-]/g,"");
+  text=text.replace(/([A-D])/g,'$1\n');
+  text=text.replace(/([A])/g,'1')
+  text=text.replace(/([B])/g,'2')
+  text=text.replace(/([C])/g,'3')
+  text=text.replace(/([D])/g,'4')
+  editor.edit(function(builder) {
+
+    builder.replace(
+      new vscode.Range(selection.start, selection.end),
+      text
+    );
+  });
+}
+);
+context.subscriptions.push(disposable7);
 
 }
 
