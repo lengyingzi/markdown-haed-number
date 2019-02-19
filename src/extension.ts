@@ -232,7 +232,7 @@ let disposable7 = vscode.commands.registerCommand("extension.formatMarkdownLineA
     selection = new vscode.Selection(0, 0, text.split("\n").length, 0);
   }
   //remove ansower
-  text=text.replace(/[0-9\s\n\-]/g,"");
+  text=text.replace(/[^A-Z]/g,"");
   text=text.replace(/([A-D])/g,'$1\n');
   text=text.replace(/([A])/g,'1')
   text=text.replace(/([B])/g,'2')
