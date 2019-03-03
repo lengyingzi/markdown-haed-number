@@ -191,17 +191,21 @@ export function activate(context: vscode.ExtensionContext) {
       text=editor.document.getText();
       selection = new vscode.Selection(0, 0, text.split("\n").length, 0);
     }
+
+    //remove black line ^[ \t]*\n
+    text=text.replace(/^[ \t]*\n/g,"");
+    //remove space before title or option
+    text=text.replace(/^\s+(?=\w)/g,"");
     //remove ansower
-    text=text.replace(/\?[A-D]\n/g,"?\n");
-
-    text=text.replace(/\n+(?=\d)/g,"\n\n");
-    text=text.replace(/(?<=D.*)\n(?!\n)/g,"\n\n1.");
+    //text=text.replace(/\?[A-D]\n/g,"?\n");
+    // add line breaks before title number
+    text=text.replace(/\n+(?=\s*\d+[\.、\s])/g,"\n\n");
+   // text=text.replace(/(?<=D.*)\n(?!\n)[^A]/g,"\n\n1.");
     // remove line breaks in center of description
-    text=text.replace(/\n(?!\w)/g,"");
+    text=text.replace(/\n(?!\s*\w)/g,"");
 // add line breaks before title number
-   text=text.replace(/\n+(?=\d)/g,"\n\n");
-
-   text=text.replace(/\s+(?=[A-D])/g,"\n");
+ //  text=text.replace(/\n+(?=\d)/g,"\n\n");
+  // text=text.replace(/\s+(?=[A-D])/g,"\n");
     //add dot . befor option  eg. A.
     text=text.replace(/^A(?!\.)/g,'A.')
     //.replace(/^B[^\.]/g,'B.').replace(/^C.[^\.]/g,'C.').replace(/^D[^\.]/g,'D.');
